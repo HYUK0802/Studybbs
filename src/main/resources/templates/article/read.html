@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title th:if="${article == null}">글읽기 - 존재하지 않는 게시글</title>
+    <title th:if="${article != null}" th:text="${'글 읽기   -' + article.getTitle()}"></title>
+    <script th:if="${article == null}">
+        alert('존재하지 않는 게시글입니다.');
+        window.close();
+    </script>
+    <script th:if="${article != null && article.isDeleted()}">
+        alert('삭제된 게시글입니다.');
+        window.close();
+    </script>
+</head>
+<body th:if="${article != null && !article.isDeleted()}">
+<table>
+    <thead>
+    <tr>
+        <th>제목</th>
+        <td th:text="${article.getTitle()}"></td>
+    </tr>
+    <tr>
+        <th>일시</th>
+        <td th:text="${#dates.format(article.getCreatedAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <th>조회수</th>
+        <td th:text="${article.getView()}"></td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td colspan="4" th:utext="${article.getContent()}"></td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <th th:text="${'첨부파일 (' + attachments.length + ')'}">첨부파일</th>
+        <td colspan="3" th:if="${attachments == null || attachments.length ==0}">
+            첨부파일이 없습니다.
+        </td>
+        <td colspan="3" th:if="${attachments != null || attachments.length > 0}">
+            <ul>
+                <li th:each="attachments : ${attachments}">
+                    <a target="_blank"
+                       th:text="${attachments.getFileName()}"
+                    th:href="@{/article/download (index=${attachments.getIndex()})}"></a>
+                </li>
+            </ul>
+        </td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>

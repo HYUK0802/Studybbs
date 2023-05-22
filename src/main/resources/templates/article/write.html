@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>글작성</title>
+    <script defer th:src="@{/resources/libraries/ckeditor/ckeditor.js}"></script>
+    <script defer th:src="@{/article/resources/scripts/write.js}"></script>
+</head>
+<body>
+<form id="writeForm" method="post" enctype="multipart/form-data">
+    <label>
+        <span>제목</span>
+        <input type="text" name="title" placeholder="제목을 입력해 주세요">
+    </label>
+    <div></div>
+    <label>
+        <span>내용</span>
+        <textarea name="content"></textarea>
+    </label>
+    <div></div>
+    <label>
+        <span>첨부파일</span>
+        <input type="file" name="files" multiple>
+    </label>
+    <div></div>
+    <input type="reset" value="초기화">
+    <input type="submit" value="작성하기">
+</form>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jhkim.studywebbbs.mappers.ArticleMapper">
+    <insert id="insertArticle"
+            useGeneratedKeys="true"
+            keyProperty="index"
+            keyColumn="index"
+            parameterType="com.jhkim.studywebbbs.entities.ArticlesEntity">
+        INSERT INTO `study_bbs`.`articles` (`title`, `content`, `view`, `created_at`, `deleted_flag`, `client_ip`,
+                                            `client_ua`)
+        values (#{title},
+                #{content},
+                #{view},
+                IFNULL(#{createdAt}, DEFAULT(`created_at`)),
+                #{isDeleted},
+                #{clientIp},
+                #{clientUa})
+    </insert>
+
+    <insert id="insertAttachment"
+            useGeneratedKeys="true"
+            keyProperty="index"
+            keyColumn="index"
+            parameterType="com.jhkim.studywebbbs.entities.AttachmentsEntity">
+        INSERT INTO `study_bbs`.`attachments` ( `article_index`, `file_name`, `file_size`, `file_content_type`, `file_data`)
+        VALUES (#{articleIndex}, #{fileName},#{fileSize},#{fileContentType},#{fileData})
+    </insert>
+    <select id="selectArticleByIndex"
+            resultType="com.jhkim.studywebbbs.entities.ArticlesEntity">
+        SELECT `index`        AS `index`,
+               `title`        AS `title`,
+               `content`      AS `content`,
+               `view`         AS `view`,
+               `created_at`   AS `createdAt`,
+               `deleted_flag` AS `isDeleted`,
+               `client_ip`    AS `clientIp`,
+               `client_ua`    AS `clientUa`
+        FROM `study_bbs`.`articles`
+        WHERE `index` = #{index}
+        LIMIT 1
+    </select>
+
+    <select id="selectAttachmentsByArticleIndexNoData"
+            resultType="com.jhkim.studywebbbs.entities.AttachmentsEntity">
+        SELECT `index`             AS `index`,
+               `article_index`     AS `articIndex`,
+               `file_name`         AS `fileName`,
+               `file_size`         AS `fileSize`,
+               `file_content_type` AS `fileContentType`
+        FROM `study_bbs`.`attachments`
+        WHERE `article_index` = #{articleIndex}
+        ORDER BY `index`
+    </select>
+
+    <update id="updateArticle"
+            parameterType="com.jhkim.studywebbbs.entities.ArticlesEntity">
+        UPDATE `study_bbs`.`articles`
+        SET `title`        = #{title},
+            `content`      = #{content},
+            `view`         = #{view},
+            `created_at`   = #{createdAt},
+            `deleted_flag` = #{isDeleted},
+            `client_ip`    = #{clientIp},
+            `client_ua`    = #{clientUa}
+        WHERE `index` = #{index}
+        LIMIT 1
+    </update>
+</mapper>
