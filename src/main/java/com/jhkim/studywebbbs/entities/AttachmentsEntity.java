@@ -8,7 +8,7 @@ public class AttachmentsEntity {
     private String fileName;
     private long fileSize;
     private String fileContentType;
-    private byte[]  fileData;
+    private byte[] fileData;
 
     public int getIndex() {
         return index;

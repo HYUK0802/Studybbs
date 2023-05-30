@@ -3,6 +3,8 @@ package com.jhkim.studywebbbs.services;
 
 import com.jhkim.studywebbbs.entities.ArticlesEntity;
 import com.jhkim.studywebbbs.entities.AttachmentsEntity;
+import com.jhkim.studywebbbs.entities.CommentEntity;
+import com.jhkim.studywebbbs.entities.ImageEntity;
 import com.jhkim.studywebbbs.mappers.ArticleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,8 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.awt.*;
 import java.io.IOException;
 import java.util.Date;
+
+
 
 @Service
 public class ArticleService {
@@ -31,7 +36,6 @@ public class ArticleService {
     }
 
     public AttachmentsEntity[] getAttachmentsOf(ArticlesEntity article) {
-
         return this.articleMapper.selectAttachmentsByArticleIndexNoData(article.getIndex());
     }
     @Transactional
@@ -57,6 +61,45 @@ public class ArticleService {
         return inserted == files.length;
     }
 
+    public ImageEntity putImage(HttpServletRequest request, MultipartFile file) throws IOException {
 
+        ImageEntity image = new ImageEntity()
+                .setName(file.getName())
+                .setSize(file.getSize())
+                .setContentType(file.getContentType())
+                .setData(file.getBytes())
+                .setCreatedAt(new Date())
+                .setClientIp(request.getRemoteAddr())
+                .setClientUa(request.getHeader("User-Agent"));
+            this.articleMapper.insertImage(image);
+            return image;
 
+   }
+   public ImageEntity getImage(int index) {
+        return this.articleMapper.selectImage(index);
+   }
+   public  AttachmentsEntity getAttachment(int index) {
+
+        return this.articleMapper.selectAttachment(index);
+   }
+   public CommentEntity[] getCommentsOf(int articleIndex){
+        return this.articleMapper.selectCommentsByArticleIndex(articleIndex);
+   }
+
+   public boolean deleteComment(CommentEntity comment) {
+        comment = this.articleMapper.selectComment(comment.getIndex());
+        if(comment == null) {
+            return false;
+        }
+        comment.setDeleted(true);
+        return this.articleMapper.updateComment(comment) >0;
+   }
+
+   public boolean putComment(HttpServletRequest request, CommentEntity comment){
+        comment.setDeleted(false)
+                .setCreatedAt(new Date())
+                .setClientIp(request.getRemoteAddr())
+                .setClientUa(request.getHeader("User-Agent"));
+        return this.articleMapper.insertComment(comment) >0;
+   }
 }

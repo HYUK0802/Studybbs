@@ -25,8 +25,41 @@
             keyColumn="index"
             parameterType="com.jhkim.studywebbbs.entities.AttachmentsEntity">
         INSERT INTO `study_bbs`.`attachments` ( `article_index`, `file_name`, `file_size`, `file_content_type`, `file_data`)
-        VALUES (#{articleIndex}, #{fileName},#{fileSize},#{fileContentType},#{fileData})
+        VALUES (#{articleIndex},
+                #{fileName},
+                #{fileSize},
+                #{fileContentType},
+                #{fileData})
     </insert>
+
+    <insert id="insertComment"
+            parameterType="com.jhkim.studywebbbs.entities.CommentEntity">
+        INSERT INTO `study_bbs`.`comments`(`article_index`, `comment_index`, `content`, `deleted_flag`, `created_at`,
+                                           `client_ip`, `client_ua`)
+        values (#{articleIndex},
+                #{commentIndex},
+                #{content},
+                #{isDeleted},
+                IFNULL(#{createdAt}, DEFAULT(`created_at`)),
+                #{clientIp},
+                #{clientUa})
+    </insert>
+
+    <insert id="insertImage"
+            useGeneratedKeys="true"
+            keyProperty="index"
+            keyColumn="index"
+            parameterType="com.jhkim.studywebbbs.entities.ImageEntity">
+        INSERT INTO `study_bbs`.`images` (`name`, `size`, `content_type`, `data`, `created_at`, `client_ip`, `client_ua`)
+VALUES (#{name},
+        #{size},
+        #{contentType},
+        #{data},
+        IFNULL(#{createdAt}, DEFAULT(`created_at`)),
+        #{clientIp},
+        #{clientUa})
+    </insert>
+
     <select id="selectArticleByIndex"
             resultType="com.jhkim.studywebbbs.entities.ArticlesEntity">
         SELECT `index`        AS `index`,
@@ -54,6 +87,62 @@
         ORDER BY `index`
     </select>
 
+    <select id="selectCommentsByArticleIndex"
+            resultType="com.jhkim.studywebbbs.entities.CommentEntity">
+        SELECT `index`         AS `index`,
+               `article_index` AS `articleIndex`,
+               `comment_index` AS `commentIndex`,
+               `content`       AS `content`,
+               `deleted_flag`  AS `isDeleted`,
+               `created_at`    AS `createdAt`,
+               `client_ip`     AS `clientIp`,
+               `client_ua`     AS `clientUa`
+        FROM `study_bbs`.`comments`
+        WHERE `article_index` = #{articleIndex}
+        ORDER BY `index`
+    </select>
+
+    <select id="selectImage"
+            resultType="com.jhkim.studywebbbs.entities.ImageEntity">
+        SELECT `index` AS `index`,
+               `name` AS `name`,
+               `size` AS `size`,
+               `content_type` AS `contentType`,
+               `data` AS `data`,
+               `created_at` AS `createdAt`,
+               `client_ip` AS `clientIp`,
+               `client_ua` AS `clientUa`
+        FROM `study_bbs`.`images` WHERE BINARY `index` =${index} LIMIT 1;
+    </select>
+
+    <select id="selectComment"
+            resultType="com.jhkim.studywebbbs.entities.CommentEntity">
+        SELECT `index`         AS `index`,
+               `article_index` AS `articleIndex`,
+               `comment_index` AS `commentIndex`,
+               `content`       AS `content`,
+               `deleted_flag`  AS `isDeleted`,
+               `created_at`    AS `createdAt`,
+               `client_ip`     AS `clientIp`,
+               `client_ua`     AS `clientUa`
+        FROM `study_bbs`.`comments`
+        WHERE `index` = #{index}
+        LIMIT 1
+    </select>
+
+    <select id="selectAttachment"
+            resultType="com.jhkim.studywebbbs.entities.AttachmentsEntity">
+        SELECT `index`             AS `index`,
+               `article_index`     AS `articleIndex`,
+               `file_name`         AS `fileName`,
+               `file_size`         AS `fileSize`,
+               `file_content_type` AS `fileContentType`,
+               `file_data`         AS `fileData`
+        FROM `study_bbs`.`attachments`
+        WHERE `index` = #{index}
+        LIMIT 1
+    </select>
+
     <update id="updateArticle"
             parameterType="com.jhkim.studywebbbs.entities.ArticlesEntity">
         UPDATE `study_bbs`.`articles`
@@ -64,6 +153,19 @@
             `deleted_flag` = #{isDeleted},
             `client_ip`    = #{clientIp},
             `client_ua`    = #{clientUa}
+        WHERE `index` = #{index}
+        LIMIT 1
+    </update>
+    <update id="updateComment"
+            parameterType="com.jhkim.studywebbbs.entities.CommentEntity">
+        UPDATE `study_bbs`.`comments`
+        SET `article_index` = #{articleIndex},
+            `comment_index` = #{commentIndex},
+            `content`       = #{content},
+            `deleted_flag`  = #{isDeleted},
+            `created_at`    = #{createdAt},
+            `client_ip`     = #{clientIp},
+            `client_ua`     = #{clientUa}
         WHERE `index` = #{index}
         LIMIT 1
     </update>

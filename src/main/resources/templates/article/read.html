@@ -15,6 +15,7 @@
         alert('삭제된 게시글입니다.');
         window.close();
     </script>
+    <script defer th:src="@{/article/resources/scripts/read.js}"></script>
 </head>
 <body th:if="${article != null && !article.isDeleted()}">
 <table>
@@ -51,7 +52,31 @@
             </ul>
         </td>
     </tr>
+
     </tfoot>
+</table>
+<table>
+    <tbody>
+    <tr>
+        <td colspan="4">
+            <form id="commentForm">
+                <input type="hidden" name="articleIndex" th:value="${article.getIndex()}">
+                <label>
+                    <input autofocus maxlength="100" type="text" name="content" placeholder="댓글">
+                </label>
+                <input type="submit" value="작성">
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="#" id="refreshComment">댓글 다시 불러오기</a>
+        </td>
+    </tr>
+    </tbody>
+    <tbody id="commentContainer">
+
+    </tbody>
 </table>
 </body>
 </html>
